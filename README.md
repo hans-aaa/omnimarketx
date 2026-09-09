@@ -1,6 +1,6 @@
 # OmniMarketX — Product Improvement Prototype
 
-A standalone front-end prototype demonstrating three fixes identified while testing OmniMarketX's demo trading environment.
+A standalone front-end prototype demonstrating fixes identified while testing OmniMarketX's demo trading environment.
 
 **Live demo:** omnimarketx-one.vercel.app
 
