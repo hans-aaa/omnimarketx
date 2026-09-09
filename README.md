@@ -2,7 +2,7 @@
 
 A standalone front-end prototype demonstrating three fixes identified while testing OmniMarketX's demo trading environment.
 
-**Live demo:** _(add your deployed link here after deploying)_
+**Live demo:** omnimarketx-one.vercel.app
 
 ## What's improved
 
