@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>OmniMarketX — Product Improvements Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0f0d24;
+    --panel: #191733;
+    --panel-2: #211f42;
+    --border: #2e2b57;
+    --text: #f2f1fb;
+    --muted: #9c98c4;
+    --pink: #ec4899;
+    --pink-dark: #db2777;
+    --green: #22c55e;
+    --green-bg: rgba(34,197,94,0.12);
+    --red: #f43f5e;
+    --red-bg: rgba(244,63,94,0.12);
+    --orange: #f97316;
+    --cat-entertainment: #a78bfa;
+    --cat-sports: #38bdf8;
+    --cat-politics: #f5b942;
+    --cat-crypto: #2dd4bf;
+    --cat-tech: #ec4899;
+    --radius: 14px;
+  }
+  *{ box-sizing:border-box; }
+  body{
+    margin:0;
+    font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: radial-gradient(circle at 20% 0%, #1a1740 0%, var(--bg) 55%);
+    color: var(--text);
+    min-height:100vh;
+  }
+  :focus-visible{ outline: 2px solid var(--pink); outline-offset: 2px; border-radius:4px; }
+  header{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 24px;
+    border-bottom:1px solid var(--border);
+    position:sticky; top:0; background:rgba(15,13,36,0.9); backdrop-filter:blur(6px);
+    z-index:10;
+  }
+  .brand{ display:flex; align-items:center; gap:10px; font-weight:700; font-size:18px; }
+  .brand-mark{
+    width:32px;height:32px;border-radius:9px;
+    background:conic-gradient(from 220deg, var(--pink), var(--orange), var(--pink));
+    display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;
+  }
+  .header-right{ display:flex; align-items:center; gap:14px; }
+  .icon-btn{
+    position:relative;
+    width:38px;height:38px;border-radius:10px;
+    background:var(--panel-2); border:1px solid var(--border);
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer; color:var(--text); font-size:16px;
+  }
+  .icon-btn:hover{ border-color:var(--pink); }
+  .badge-dot{
+    position:absolute; top:-4px; right:-4px;
+    background:var(--pink); color:white; font-size:10px; font-weight:700;
+    border-radius:20px; padding:1px 5px; line-height:1.3;
+  }
+  main{ max-width:960px; margin:0 auto; padding:28px 20px 80px; }
+  .lead{ margin-bottom:26px; }
+  .lead h1{ font-size:22px; margin:0 0 6px; }
+  .lead p{ color:var(--muted); margin:0; font-size:14px; line-height:1.5; max-width:640px; }
+  .tag-row{ display:flex; gap:8px; margin-top:14px; flex-wrap:wrap; }
+  .pill{
+    font-size:12px; padding:5px 10px; border-radius:999px;
+    background:var(--panel-2); border:1px solid var(--border); color:var(--muted);
+  }
+  .section-title{
+    font-size:14px; color:var(--muted); margin:34px 0 12px; letter-spacing:0.2px;
+  }
+  .grid{
+    display:grid; grid-template-columns: repeat(auto-fill, minmax(260px,1fr));
+    gap:16px;
+  }
+  .card{
+    background:var(--panel); border:1px solid var(--border); border-left:3px solid var(--card-accent, var(--border));
+    border-radius: var(--radius);
+    padding:16px; display:flex; flex-direction:column; gap:10px;
+    position:relative; overflow:hidden;
+    transition: box-shadow .25s ease, transform .25s ease;
+  }
+  .card.pulse{
+    box-shadow: 0 0 0 2px var(--pink), 0 8px 24px rgba(236,72,153,0.25);
+    transform: translateY(-1px);
+  }
+  .card-top{ display:flex; align-items:center; justify-content:space-between; }
+  .category{ font-size:11px; color:var(--card-accent, var(--orange)); font-weight:600; display:flex; align-items:center; gap:5px; }
+  .lang-flag{
+    font-size:11px; color:var(--muted); background:var(--panel-2);
+    border:1px solid var(--border); padding:3px 8px; border-radius:8px; cursor:pointer;
+    display:flex; align-items:center; gap:5px;
+  }
+  .lang-flag:hover{ border-color:var(--orange); color:var(--orange); }
+  .market-title{ font-size:15px; font-weight:600; line-height:1.35; min-height:42px; letter-spacing:-0.1px; }
+  .market-title.translated{ color:var(--text); }
+  .translated-note{ font-size:11px; color:var(--orange); display:none; align-items:center; gap:4px; }
+  .translated-note.show{ display:flex; }
+  .odds-row{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
+  .odds{
+    font-family:'Space Grotesk', sans-serif; font-size:28px; font-weight:700;
+    font-variant-numeric: tabular-nums; letter-spacing:-0.5px;
+    transition: color .3s ease;
+  }
+  .odds.hi{ color: var(--green); }
+  .odds.lo{ color: var(--red); }
+  .odds.mid{ color: var(--pink); }
+  .odds.flash-up{ animation: flashUp .6s ease; }
+  .odds.flash-down{ animation: flashDown .6s ease; }
+  @keyframes flashUp{ 0%{ color:var(--green); text-shadow:0 0 14px rgba(34,197,94,0.6); } 100%{ text-shadow:none; } }
+  @keyframes flashDown{ 0%{ color:var(--red); text-shadow:0 0 14px rgba(244,63,94,0.6); } 100%{ text-shadow:none; } }
+  .sparkline{ opacity:0.85; flex-shrink:0; }
+  .stats-row{ display:flex; justify-content:space-between; font-size:12px; color:var(--muted); }
+  .empty-state{
+    font-size:12px; color:var(--orange); background:rgba(249,115,22,0.08);
+    border:1px dashed rgba(249,115,22,0.35); border-radius:8px; padding:6px 10px;
+  }
+  .actions{ display:flex; gap:8px; margin-top:4px; }
+  .yn-btn{
+    flex:1; padding:10px 0; border-radius:10px; border:none; cursor:pointer;
+    font-weight:700; font-size:14px; transition:transform .08s ease, filter .15s ease;
+  }
+  .yn-btn:active{ transform:scale(0.97); }
+  .yn-yes{ background:var(--green-bg); color:var(--green); border:1px solid rgba(34,197,94,0.35); }
+  .yn-yes:hover{ background:rgba(34,197,94,0.22); }
+  .yn-no{ background:var(--red-bg); color:var(--red); border:1px solid rgba(244,63,94,0.35); }
+  .yn-no:hover{ background:rgba(244,63,94,0.22); }
+
+  .stats-row span{ transition: color .3s ease; }
+  .stats-row span.flash{ color: var(--green); font-weight:700; }
+
+  /* Modal */
+  .overlay{
+    position:fixed; inset:0; background:rgba(6,5,16,0.66);
+    display:none; align-items:center; justify-content:center; z-index:50; padding:16px;
+  }
+  .overlay.show{ display:flex; }
+  .modal{
+    width:100%; max-width:380px; background:var(--panel); border:1px solid var(--border);
+    border-radius:16px; padding:22px; animation: pop .15s ease;
+  }
+  @keyframes pop{ from{ transform:scale(.96); opacity:0; } to{ transform:scale(1); opacity:1; } }
+  .modal-head{ display:flex; justify-content:space-between; align-items:flex-start; gap:10px; }
+  .modal-head h3{ margin:0; font-size:16px; line-height:1.4; }
+  .close-x{ background:none; border:none; color:var(--muted); font-size:18px; cursor:pointer; }
+  .side-chip{
+    display:inline-block; margin-top:10px; padding:5px 12px; border-radius:999px; font-weight:700; font-size:13px;
+  }
+  .side-chip.yes{ background:var(--green-bg); color:var(--green); }
+  .side-chip.no{ background:var(--red-bg); color:var(--red); }
+  .qty-row{ margin-top:18px; }
+  .qty-row label{ font-size:12px; color:var(--muted); }
+  .qty-input{
+    width:100%; margin-top:6px; padding:11px 12px; border-radius:10px;
+    background:var(--panel-2); border:1px solid var(--border); color:var(--text); font-size:15px;
+  }
+  .modal-summary{ margin-top:14px; font-size:13px; color:var(--muted); display:flex; justify-content:space-between; }
+  .breakdown{
+    margin-top:16px; padding:12px 14px; border-radius:10px;
+    background:var(--panel-2); border:1px solid var(--border);
+    display:flex; flex-direction:column; gap:8px;
+  }
+  .breakdown-row{
+    display:flex; justify-content:space-between; font-size:12.5px; color:var(--muted);
+  }
+  .breakdown-row span:last-child{ color:var(--text); font-variant-numeric:tabular-nums; }
+  .breakdown-row.total{
+    border-top:1px dashed var(--border); padding-top:8px; margin-top:2px;
+    font-weight:700; font-size:13px;
+  }
+  .breakdown-row.total span{ color:var(--text); }
+  .confirm-btn{
+    width:100%; margin-top:18px; padding:13px; border:none; border-radius:10px;
+    background:var(--pink); color:white; font-weight:700; font-size:14px; cursor:pointer;
+  }
+  .confirm-btn:hover{ background:var(--pink-dark); }
+  .success-note{
+    margin-top:12px; font-size:12.5px; color:var(--green); display:none; text-align:center;
+  }
+  .success-note.show{ display:block; }
+
+  /* Chat inbox drawer */
+  .drawer{
+    position:fixed; top:0; right:-380px; width:360px; max-width:92vw; height:100vh;
+    background:var(--panel); border-left:1px solid var(--border);
+    transition:right .22s ease; z-index:40; display:flex; flex-direction:column;
+  }
+  .drawer.open{ right:0; }
+  .drawer-head{
+    padding:18px; border-bottom:1px solid var(--border);
+    display:flex; justify-content:space-between; align-items:center;
+  }
+  .drawer-head h3{ margin:0; font-size:16px; }
+  .convo-list{ overflow-y:auto; flex:1; }
+  .convo{
+    display:flex; gap:12px; padding:14px 18px; border-bottom:1px solid var(--border);
+    cursor:pointer;
+  }
+  .convo:hover{ background:var(--panel-2); }
+  .avatar{
+    width:38px;height:38px;border-radius:50%; flex-shrink:0;
+    background:linear-gradient(135deg, var(--pink), var(--orange));
+    display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px;
+  }
+  .convo-body{ flex:1; min-width:0; }
+  .convo-top{ display:flex; justify-content:space-between; gap:8px; }
+  .convo-name{ font-weight:600; font-size:13.5px; }
+  .convo-time{ font-size:11px; color:var(--muted); flex-shrink:0; }
+  .convo-msg{
+    font-size:12.5px; color:var(--muted); margin-top:2px;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .unread-dot{ width:8px;height:8px;border-radius:50%; background:var(--pink); flex-shrink:0; margin-top:5px; }
+  .drawer-backdrop{
+    position:fixed; inset:0; background:rgba(6,5,16,0.5); z-index:39;
+    display:none;
+  }
+  .drawer-backdrop.show{ display:block; }
+
+  /* Thread view */
+  .thread-view{
+    display:none; flex-direction:column; height:100%;
+  }
+  .thread-view.show{ display:flex; }
+  .thread-head{
+    padding:16px 18px; border-bottom:1px solid var(--border);
+    display:flex; align-items:center; gap:12px;
+  }
+  .back-btn{
+    background:none; border:none; color:var(--muted); font-size:18px; cursor:pointer; padding:4px;
+  }
+  .back-btn:hover{ color:var(--text); }
+  .thread-head-name{ font-weight:600; font-size:14.5px; }
+  .thread-messages{
+    flex:1; overflow-y:auto; padding:16px 18px; display:flex; flex-direction:column; gap:10px;
+  }
+  .bubble{
+    max-width:78%; padding:9px 13px; border-radius:14px; font-size:13.5px; line-height:1.4;
+  }
+  .bubble.them{
+    background:var(--panel-2); align-self:flex-start; border-bottom-left-radius:4px;
+  }
+  .bubble.me{
+    background:var(--pink); color:white; align-self:flex-end; border-bottom-right-radius:4px;
+  }
+  .thread-input-row{
+    padding:14px 18px; border-top:1px solid var(--border); display:flex; gap:8px;
+  }
+  .thread-input{
+    flex:1; padding:10px 12px; border-radius:10px; background:var(--panel-2);
+    border:1px solid var(--border); color:var(--text); font-size:13.5px;
+  }
+  .send-btn{
+    padding:0 16px; border:none; border-radius:10px; background:var(--pink);
+    color:white; font-weight:700; cursor:pointer; font-size:13px;
+  }
+  .send-btn:hover{ background:var(--pink-dark); }
+
+  .note-box{
+    margin-top:40px; padding:16px 18px; border-radius:12px;
+    background:var(--panel); border:1px dashed var(--border); color:var(--muted); font-size:12.5px; line-height:1.6;
+  }
+  .note-box b{ color:var(--text); }
+
+  /* Onboarding */
+  .onboard-overlay{
+    position:fixed; inset:0; background:rgba(6,5,16,0.55); z-index:60;
+    display:none;
+  }
+  .onboard-overlay.show{ display:block; }
+  .spotlight-ring{
+    position:absolute; border:2px solid var(--pink); border-radius:12px;
+    box-shadow: 0 0 0 6000px rgba(6,5,16,0.55);
+    transition: all .25s ease;
+    pointer-events:none;
+  }
+  .onboard-card{
+    position:absolute; width:250px; background:var(--panel); border:1px solid var(--pink);
+    border-radius:12px; padding:14px 16px; font-size:13px; line-height:1.5;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  }
+  .onboard-card .step-label{ font-size:11px; color:var(--pink); font-weight:700; margin-bottom:4px; }
+  .onboard-actions{ display:flex; justify-content:space-between; align-items:center; margin-top:10px; }
+  .onboard-skip{ background:none; border:none; color:var(--muted); font-size:12px; cursor:pointer; }
+  .onboard-next{
+    background:var(--pink); border:none; color:white; font-weight:700;
+    font-size:12px; padding:6px 14px; border-radius:8px; cursor:pointer;
+  }
+  @media (max-width:480px){
+    .grid{ grid-template-columns:1fr; }
+    header{ padding:14px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="brand-mark">M</div>
+    OmniMarketX
+  </div>
+  <div class="header-right">
+    <button class="icon-btn" id="chatBtn" title="Messages">
+      💬
+      <span class="badge-dot">3</span>
+    </button>
+    <div class="icon-btn" title="Notifications">🔔</div>
+  </div>
+</header>
+
+<main>
+  <div class="lead">
+    <h1>Product improvement prototype</h1>
+    <p>Few focused fixes based on testing.</p>
+    <div class="tag-row">
+      <span class="pill">1. Clickable YES / NO</span>
+      <span class="pill">2. Unified chat inbox</span>
+      <span class="pill">3. Market translation</span>
+      <span class="pill">4. Transparent trade breakdown</span>
+      <span class="pill">5. Live volume updates</span>
+      <span class="pill">6. First-time onboarding</span>
+      <span class="pill">7. Visual design pass</span>
+    </div>
+  </div>
+
+  <div class="section-title">Top Markets — try clicking YES or NO directly</div>
+  <div class="grid" id="marketGrid"></div>
+</main>
+
+<!-- Trade Modal -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="modalTitle"></h3>
+      <button class="close-x" id="closeModal">✕</button>
+    </div>
+    <span class="side-chip" id="sideChip"></span>
+    <div class="qty-row">
+      <label>Amount (demo USDC)</label>
+      <input type="number" class="qty-input" id="amountInput" value="10" min="1" />
+    </div>
+    <div class="breakdown" id="breakdown">
+      <div class="breakdown-row">
+        <span>Displayed price</span>
+        <span id="bdDisplayPrice"></span>
+      </div>
+      <div class="breakdown-row">
+        <span>Exact execution price</span>
+        <span id="bdExactPrice"></span>
+      </div>
+      <div class="breakdown-row">
+        <span>Shares = Amount ÷ Exact price</span>
+        <span id="bdSharesCalc"></span>
+      </div>
+      <div class="breakdown-row total">
+        <span>Total cost</span>
+        <span id="bdTotal"></span>
+      </div>
+    </div>
+    <button class="confirm-btn" id="confirmBtn">Confirm Trade</button>
+    <div class="success-note" id="successNote">✓ Trade placed — check your portfolio</div>
+  </div>
+</div>
+
+<!-- Chat inbox -->
+<div class="drawer-backdrop" id="drawerBackdrop"></div>
+<div class="drawer" id="chatDrawer">
+  <div class="drawer-head" id="listHead">
+    <h3>Messages</h3>
+    <button class="close-x" id="closeDrawer">✕</button>
+  </div>
+  <div class="convo-list" id="convoList"></div>
+
+  <div class="thread-view" id="threadView">
+    <div class="thread-head">
+      <button class="back-btn" id="backBtn">←</button>
+      <span class="thread-head-name" id="threadName"></span>
+    </div>
+    <div class="thread-messages" id="threadMessages"></div>
+    <div class="thread-input-row">
+      <input class="thread-input" id="threadInput" placeholder="Type a message..." />
+      <button class="send-btn" id="sendBtn">Send</button>
+    </div>
+  </div>
+</div>
+
+<!-- Onboarding tour -->
+<div class="onboard-overlay" id="onboardOverlay">
+  <div class="spotlight-ring" id="spotlightRing"></div>
+  <div class="onboard-card" id="onboardCard">
+    <div class="step-label" id="onboardStepLabel"></div>
+    <div id="onboardText"></div>
+    <div class="onboard-actions">
+      <button class="onboard-skip" id="onboardSkip">Skip</button>
+      <button class="onboard-next" id="onboardNext">Next</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const CATEGORY_META = {
+  ENTERTAINMENT: { icon: '🎬', color: 'var(--cat-entertainment)' },
+  SPORTS:        { icon: '🏆', color: 'var(--cat-sports)' },
+  POLITICS:      { icon: '🏛️', color: 'var(--cat-politics)' },
+  CRYPTO:        { icon: '₿',  color: 'var(--cat-crypto)' },
+  TECH:          { icon: '📱', color: 'var(--cat-tech)' },
+};
+
+const markets = [
+  { id:1, category:'ENTERTAINMENT', title:'Will Avengers: Doomsday earn at least $1B?', yes:73, no:27, lang:null, vol:12480, traders:86 },
+  { id:2, category:'SPORTS', title:'¿Ganará Brasil el partido contra Argentina?', lang:'es',
+    translated:'Will Brazil win the match against Argentina?', yes:64, no:36, vol:8340, traders:52 },
+  { id:3, category:'POLITICS', title:'Will the policy pass before year end?', yes:41, no:59, lang:null, vol:21150, traders:140 },
+  { id:4, category:'CRYPTO', title:'क्या बिटकॉइन $100k से ऊपर बंद होगा?', lang:'hi',
+    translated:'Will Bitcoin close above $100k?', yes:55, no:45, vol:15920, traders:98 },
+  { id:5, category:'TECH', title:'Will the next flagship phone launch before October?', yes:82, no:18, lang:null, vol:0, traders:0 },
+];
+
+function oddsClass(yes){
+  if(yes >= 60) return 'hi';
+  if(yes <= 40) return 'lo';
+  return 'mid';
+}
+function sparklinePath(seed, color){
+  let pts = [];
+  let v = 15 + (seed * 7) % 10;
+  for(let i=0;i<10;i++){
+    v += Math.sin(seed + i * 1.7) * 4;
+    v = Math.max(4, Math.min(26, v));
+    pts.push(`${i*7},${30 - v}`);
+  }
+  return `<svg class="sparkline" width="64" height="30" viewBox="0 0 63 30"><polyline points="${pts.join(' ')}" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+}
+
+const grid = document.getElementById('marketGrid');
+function renderCard(m){
+  const meta = CATEGORY_META[m.category] || { icon:'📊', color:'var(--pink)' };
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.id = `card-${m.id}`;
+  card.style.setProperty('--card-accent', meta.color);
+  const statsHtml = m.vol === 0
+    ? `<div class="empty-state" id="stats-${m.id}">No trades yet — be the first</div>`
+    : `<div class="stats-row" id="stats-${m.id}"><span id="vol-${m.id}">Vol $${m.vol.toLocaleString()}</span><span id="traders-${m.id}">${m.traders} traders</span></div>`;
+  card.innerHTML = `
+    <div class="card-top">
+      <span class="category">${meta.icon} ${m.category}</span>
+      ${m.lang ? `<span class="lang-flag" data-id="${m.id}">🌐 Translate</span>` : ''}
+    </div>
+    <div class="market-title" id="title-${m.id}">${m.title}</div>
+    <div class="translated-note" id="note-${m.id}">↳ Translated to English</div>
+    <div class="odds-row">
+      <span class="odds ${oddsClass(m.yes)}" id="odds-${m.id}">${m.yes}%</span>
+      ${sparklinePath(m.id * 3.1, meta.color)}
+    </div>
+    ${statsHtml}
+    <div class="actions">
+      <button class="yn-btn yn-yes" data-id="${m.id}" data-side="YES" data-price="${m.yes}">YES ${m.yes}¢</button>
+      <button class="yn-btn yn-no" data-id="${m.id}" data-side="NO" data-price="${m.no}">NO ${m.no}¢</button>
+    </div>
+  `;
+  grid.appendChild(card);
+}
+markets.forEach(renderCard);
+
+// Translate handler
+document.addEventListener('click', (e) => {
+  if(e.target.classList.contains('lang-flag')){
+    const id = e.target.dataset.id;
+    const m = markets.find(x => x.id == id);
+    document.getElementById(`title-${id}`).textContent = m.translated;
+    document.getElementById(`note-${id}`).classList.add('show');
+    e.target.textContent = '✓ Translated';
+    e.target.style.pointerEvents = 'none';
+  }
+});
+
+// Trade modal handler
+const overlay = document.getElementById('overlay');
+const modalTitle = document.getElementById('modalTitle');
+const sideChip = document.getElementById('sideChip');
+const amountInput = document.getElementById('amountInput');
+const successNote = document.getElementById('successNote');
+const bdDisplayPrice = document.getElementById('bdDisplayPrice');
+const bdExactPrice = document.getElementById('bdExactPrice');
+const bdSharesCalc = document.getElementById('bdSharesCalc');
+const bdTotal = document.getElementById('bdTotal');
+let currentDisplayPrice = 0;
+let currentExactPrice = 0;
+let currentMarketId = null;
+
+// Simulates a real execution price with more precision than the rounded
+// 2-decimal price shown on the card — this is what actually determines
+// shares, so we show it explicitly instead of hiding the rounding.
+function deriveExactPrice(displayCents){
+  const jitter = (Math.sin(displayCents * 12.9898) * 43758.5453) % 1;
+  const offset = (Math.abs(jitter) - 0.5) * 0.6; // +/- up to 0.3 cents
+  return Math.max(0.1, displayCents + offset);
+}
+
+function updateBreakdown(){
+  const amt = parseFloat(amountInput.value) || 0;
+  const exactDecimal = currentExactPrice / 100;
+  const shares = exactDecimal > 0 ? (amt / exactDecimal) : 0;
+  bdDisplayPrice.textContent = currentDisplayPrice.toFixed(0) + '¢ (rounded)';
+  bdExactPrice.textContent = currentExactPrice.toFixed(4) + '¢';
+  bdSharesCalc.textContent = amt.toFixed(2) + ' ÷ ' + exactDecimal.toFixed(4) + ' = ' + shares.toFixed(4) + ' shares';
+  bdTotal.textContent = '$' + amt.toFixed(2) + ' USDC';
+}
+amountInput.addEventListener('input', updateBreakdown);
+
+document.addEventListener('click', (e) => {
+  if(e.target.classList.contains('yn-btn')){
+    const id = e.target.dataset.id;
+    const side = e.target.dataset.side;
+    const price = parseFloat(e.target.dataset.price);
+    const m = markets.find(x => x.id == id);
+    currentDisplayPrice = price;
+    currentExactPrice = deriveExactPrice(price);
+    currentMarketId = id;
+    modalTitle.textContent = m.translated || m.title;
+    sideChip.textContent = side;
+    sideChip.className = 'side-chip ' + (side === 'YES' ? 'yes' : 'no');
+    successNote.classList.remove('show');
+    amountInput.value = 10;
+    updateBreakdown();
+    overlay.classList.add('show');
+  }
+});
+document.getElementById('closeModal').onclick = () => overlay.classList.remove('show');
+overlay.addEventListener('click', (e) => { if(e.target === overlay) overlay.classList.remove('show'); });
+document.getElementById('confirmBtn').onclick = () => {
+  successNote.classList.add('show');
+  // Reflect the trade in the market's volume/trader stats immediately —
+  // this fixes the bug where a real trade didn't move the displayed Vol/traders.
+  const amt = parseFloat(amountInput.value) || 0;
+  const m = markets.find(x => x.id == currentMarketId);
+  if(m){
+    const wasEmpty = m.vol === 0;
+    m.vol += amt;
+    m.traders += 1;
+    const statsContainer = document.getElementById(`stats-${m.id}`);
+    if(wasEmpty && statsContainer){
+      statsContainer.outerHTML = `<div class="stats-row" id="stats-${m.id}"><span id="vol-${m.id}">Vol $${m.vol.toLocaleString()}</span><span id="traders-${m.id}">${m.traders} traders</span></div>`;
+    } else {
+      const volEl = document.getElementById(`vol-${m.id}`);
+      const tradersEl = document.getElementById(`traders-${m.id}`);
+      volEl.textContent = 'Vol $' + m.vol.toLocaleString();
+      tradersEl.textContent = m.traders + ' traders';
+      volEl.classList.add('flash');
+      tradersEl.classList.add('flash');
+      setTimeout(() => { volEl.classList.remove('flash'); tradersEl.classList.remove('flash'); }, 1200);
+    }
+    // Small odds nudge + flash so the price feels alive after a trade, and a card pulse for feedback.
+    const bump = currentDisplayPrice === m.yes ? 1 : -1;
+    m.yes = Math.max(2, Math.min(98, m.yes + bump));
+    m.no = 100 - m.yes;
+    const oddsEl = document.getElementById(`odds-${m.id}`);
+    if(oddsEl){
+      oddsEl.textContent = m.yes + '%';
+      oddsEl.className = 'odds ' + oddsClass(m.yes) + (bump > 0 ? ' flash-up' : ' flash-down');
+      setTimeout(() => { oddsEl.className = 'odds ' + oddsClass(m.yes); }, 650);
+    }
+    const cardEl = document.getElementById(`card-${m.id}`);
+    if(cardEl){
+      cardEl.classList.add('pulse');
+      setTimeout(() => cardEl.classList.remove('pulse'), 700);
+      const yesBtn = cardEl.querySelector('.yn-yes');
+      const noBtn = cardEl.querySelector('.yn-no');
+      if(yesBtn){ yesBtn.textContent = `YES ${m.yes}¢`; yesBtn.dataset.price = m.yes; }
+      if(noBtn){ noBtn.textContent = `NO ${m.no}¢`; noBtn.dataset.price = m.no; }
+    }
+  }
+  setTimeout(() => overlay.classList.remove('show'), 900);
+};
+
+// Chat drawer
+const conversations = [
+  { id:1, name:'Rahul_Trades', msg:'hey did you see the odds move on the Brazil market?', time:'2m', unread:true,
+    thread:[ {from:'them', text:'hey did you see the odds move on the Brazil market?'},
+             {from:'me', text:'yeah just checked, jumped like 8% in an hour'},
+             {from:'them', text:'crazy, might buy in before it settles more'} ] },
+  { id:2, name:'MarketMaven', msg:'gg on that entertainment call 🔥', time:'18m', unread:true,
+    thread:[ {from:'them', text:'gg on that entertainment call 🔥'},
+             {from:'me', text:'haha thanks, got lucky with the timing'} ] },
+  { id:3, name:'CryptoSarah', msg:'want to team up on the leaderboard challenge?', time:'1h', unread:true,
+    thread:[ {from:'them', text:'want to team up on the leaderboard challenge?'} ] },
+  { id:4, name:'DemoUser_42', msg:'thanks for the tip on the politics market', time:'3h', unread:false,
+    thread:[ {from:'them', text:'thanks for the tip on the politics market'},
+             {from:'me', text:'anytime, that one felt pretty obvious'} ] },
+  { id:5, name:'PredictPro', msg:'check out my new watchlist', time:'1d', unread:false,
+    thread:[ {from:'them', text:'check out my new watchlist'} ] },
+];
+const convoList = document.getElementById('convoList');
+conversations.forEach(c => {
+  const el = document.createElement('div');
+  el.className = 'convo';
+  el.dataset.id = c.id;
+  el.innerHTML = `
+    <div class="avatar">${c.name[0]}</div>
+    <div class="convo-body">
+      <div class="convo-top">
+        <span class="convo-name">${c.name}</span>
+        <span class="convo-time">${c.time}</span>
+      </div>
+      <div class="convo-msg">${c.msg}</div>
+    </div>
+    ${c.unread ? '<div class="unread-dot"></div>' : ''}
+  `;
+  convoList.appendChild(el);
+});
+
+const chatDrawer = document.getElementById('chatDrawer');
+const drawerBackdrop = document.getElementById('drawerBackdrop');
+const listHead = document.getElementById('listHead');
+const threadView = document.getElementById('threadView');
+const threadName = document.getElementById('threadName');
+const threadMessages = document.getElementById('threadMessages');
+const threadInput = document.getElementById('threadInput');
+
+document.getElementById('chatBtn').onclick = () => {
+  chatDrawer.classList.add('open');
+  drawerBackdrop.classList.add('show');
+};
+function closeDrawer(){
+  chatDrawer.classList.remove('open');
+  drawerBackdrop.classList.remove('show');
+  closeThread();
+}
+document.getElementById('closeDrawer').onclick = closeDrawer;
+drawerBackdrop.onclick = closeDrawer;
+
+function renderThread(c){
+  threadName.textContent = c.name;
+  threadMessages.innerHTML = c.thread.map(m =>
+    `<div class="bubble ${m.from === 'me' ? 'me' : 'them'}">${m.text}</div>`
+  ).join('');
+  threadMessages.scrollTop = threadMessages.scrollHeight;
+}
+function openThread(id){
+  const c = conversations.find(x => x.id == id);
+  renderThread(c);
+  listHead.style.display = 'none';
+  convoList.style.display = 'none';
+  threadView.classList.add('show');
+  threadInput.dataset.activeId = id;
+}
+function closeThread(){
+  threadView.classList.remove('show');
+  listHead.style.display = 'flex';
+  convoList.style.display = 'block';
+}
+convoList.addEventListener('click', (e) => {
+  const row = e.target.closest('.convo');
+  if(row) openThread(row.dataset.id);
+});
+document.getElementById('backBtn').onclick = closeThread;
+
+document.getElementById('sendBtn').onclick = sendMessage;
+threadInput.addEventListener('keydown', (e) => { if(e.key === 'Enter') sendMessage(); });
+function sendMessage(){
+  const text = threadInput.value.trim();
+  if(!text) return;
+  const id = threadInput.dataset.activeId;
+  const c = conversations.find(x => x.id == id);
+  c.thread.push({ from:'me', text });
+  renderThread(c);
+  threadInput.value = '';
+}
+
+// Onboarding tour — highlights the chat icon (easy to miss, top-right)
+// and the YES/NO tags (now directly clickable) on first load.
+const onboardSteps = [
+  { target: '#chatBtn', label: 'Step 1 of 2', text: 'Never miss a message. Click the chat icon anytime and view your complete conversation history.' },
+  { target: '.yn-btn', label: 'Step 2 of 2', text: 'Tap YES or NO directly on any market card to trade instantly' },
+];
+let onboardIndex = 0;
+const onboardOverlay = document.getElementById('onboardOverlay');
+const spotlightRing = document.getElementById('spotlightRing');
+const onboardCard = document.getElementById('onboardCard');
+const onboardStepLabel = document.getElementById('onboardStepLabel');
+const onboardText = document.getElementById('onboardText');
+const onboardNext = document.getElementById('onboardNext');
+
+function showOnboardStep(i){
+  const step = onboardSteps[i];
+  const el = document.querySelector(step.target);
+  if(!el) return endOnboarding();
+  const rect = el.getBoundingClientRect();
+  spotlightRing.style.top = (rect.top - 6 + window.scrollY) + 'px';
+  spotlightRing.style.left = (rect.left - 6 + window.scrollX) + 'px';
+  spotlightRing.style.width = (rect.width + 12) + 'px';
+  spotlightRing.style.height = (rect.height + 12) + 'px';
+
+  let cardTop = rect.bottom + 14 + window.scrollY;
+  let cardLeft = Math.min(rect.left + window.scrollX, window.innerWidth - 266);
+  onboardCard.style.top = cardTop + 'px';
+  onboardCard.style.left = Math.max(12, cardLeft) + 'px';
+
+  onboardStepLabel.textContent = step.label;
+  onboardText.textContent = step.text;
+  onboardNext.textContent = i === onboardSteps.length - 1 ? 'Got it' : 'Next';
+}
+function endOnboarding(){
+  onboardOverlay.classList.remove('show');
+}
+document.getElementById('onboardSkip').onclick = endOnboarding;
+document.getElementById('onboardNext').onclick = () => {
+  onboardIndex++;
+  if(onboardIndex >= onboardSteps.length){ endOnboarding(); return; }
+  showOnboardStep(onboardIndex);
+};
+window.addEventListener('load', () => {
+  onboardIndex = 0;
+  onboardOverlay.classList.add('show');
+  showOnboardStep(0);
+});
+</script>
+
+</body>
+</html>
